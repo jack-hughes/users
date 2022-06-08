@@ -2,18 +2,12 @@ package storage
 
 import (
 	"context"
-	"github.com/jack-hughes/users/pkg/api/users"
+	"github.com/jack-hughes/users/internal/storage/types"
 	"github.com/jackc/pgx/v4"
 	"go.uber.org/zap"
 )
 
-type Storage interface {
-	Create(ctx context.Context, req *users.User) (User, error)
-	Update(ctx context.Context, req *users.User) (User, error)
-	Delete(ctx context.Context, req *users.User) error
-	List(ctx context.Context, req *users.ListUsersRequest) ([]User, error)
-}
-
+//go:generate go run -mod=mod github.com/golang/mock/mockgen -source=./storage.go -package=mocks -destination=../../test/mocks/postgres_mocks.go
 type Postgres interface {
 	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
 }
@@ -23,23 +17,23 @@ type Store struct {
 	log *zap.Logger
 }
 
-func New(log *zap.Logger, db Postgres) Storage {
+func New(log *zap.Logger, db Postgres) Store {
 	log = log.With(zap.String("component", "storage"))
 	log.Debug("configuring database")
 
-	return &Store{
+	return Store{
 		db:  db,
 		log: log,
 	}
 }
 
-func (s *Store) Create(ctx context.Context, usr *users.User) (User, error) {
+func (s Store) Create(ctx context.Context, usr types.User) (types.User, error) {
 	sql := `
 INSERT INTO users.users (first_name, lastname, nickname, password, email, country)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 `
-	var dbUsr User
+	var dbUsr types.User
 	err := s.db.QueryRow(ctx, sql, usrToArgs(usr)...).Scan(
 		&dbUsr.Id,
 		&dbUsr.FirstName,
@@ -52,34 +46,34 @@ RETURNING *;
 		&dbUsr.UpdatedAt,
 	)
 	if err != nil {
-		return User{}, err
+		return types.User{}, err
 	}
 
 	return dbUsr, nil
 }
 
-func (s *Store) Update(ctx context.Context, req *users.User) (User, error) {
-	return User{
+func (s Store) Update(ctx context.Context, req types.User) (types.User, error) {
+	return types.User{
 		Id: req.Id,
 	}, nil
 }
 
-func (s *Store) Delete(ctx context.Context, req *users.User) error {
+func (s Store) Delete(ctx context.Context, req types.User) error {
 	return nil
 }
 
-func (s *Store) List(ctx context.Context, req *users.ListUsersRequest) ([]User, error) {
-	return []User{
+func (s Store) List(ctx context.Context, countryFilter string) ([]types.User, error) {
+	return []types.User{
 		{
-			Id: req.Id,
+			Id: "fake-id",
 		},
 		{
-			Id: req.Id,
+			Id: "fake-id",
 		},
 	}, nil
 }
 
-func usrToArgs(in *users.User) []interface{} {
+func usrToArgs(in types.User) []interface{} {
 	return []interface{}{
 		in.FirstName,
 		in.LastName,

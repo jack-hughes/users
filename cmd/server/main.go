@@ -50,7 +50,7 @@ func main() {
 	}
 
 	srv := grpc.NewServer()
-	svc := service.NewUserService(log, store)
+	svc := service.NewUserService(log, store, db)
 	users.RegisterUsersServer(srv, svc)
 	if err := srv.Serve(lis); err != nil {
 		log.Fatal(fmt.Sprintf("failed to serve: %v", err))
