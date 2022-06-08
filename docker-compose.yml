@@ -1,0 +1,35 @@
+services:
+  postgres:
+    container_name: postgres
+    image: postgres:14.3-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=users
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./scripts/db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  users-service:
+    container_name: users-service
+    build: .
+    environment:
+      - GRPC_PORT=5355
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=users
+    depends_on:
+      postgres:
+        condition: service_healthy
+    links:
+      - postgres
+volumes:
+  postgres:

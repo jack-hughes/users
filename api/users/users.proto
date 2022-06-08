@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package users.v1;
+
+import "google/protobuf/timestamp.proto";
+option go_package = "github.com/jack-hughes/users/pkg/apis/users";
+
+service Users {
+  rpc Create(User) returns (User) {}
+  rpc Update(User) returns (User) {}
+  rpc Delete(User) returns (User) {}
+  rpc List(ListUsersRequest) returns (stream User) {}
+}
+
+message User {
+  string id = 1;
+  string first_name = 2;
+  string last_name = 3;
+  string nickname = 4;
+  string password = 5;
+  string email = 6;
+  string country = 7;
+
+  google.protobuf.Timestamp created_at = 8;
+  google.protobuf.Timestamp updated_at = 9;
+}
+
+message ListUsersRequest {
+  string id = 1;
+  string filter = 2;
+}
