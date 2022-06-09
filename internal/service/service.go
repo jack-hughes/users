@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/jack-hughes/users/internal/storage"
 	"github.com/jack-hughes/users/internal/storage/types"
 	"github.com/jack-hughes/users/internal/utils"
@@ -50,11 +51,24 @@ func (u UserService) Create(ctx context.Context, user *users.User) (*users.User,
 }
 
 func (u UserService) Update(ctx context.Context, user *users.User) (*users.User, error) {
-	return &users.User{}, nil
+	usr, err := u.store.Update(ctx, types.User{
+		Id:        user.Id,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Nickname:  user.Nickname,
+		Password:  user.Password,
+		Email:     user.Email,
+		Country:   user.Country,
+	})
+	return hydrateAPIResponse(usr), utils.SanitiseError(err)
 }
 
-func (u UserService) Delete(ctx context.Context, user *users.User) (*users.User, error) {
-	return &users.User{}, nil
+func (u UserService) Delete(ctx context.Context, user *users.User) (*empty.Empty, error) {
+	err := u.store.Delete(ctx, types.User{
+		Id: user.Id,
+	})
+
+	return &empty.Empty{}, utils.SanitiseError(err)
 }
 
 func (u UserService) List(req *users.ListUsersRequest, stream users.Users_ListServer) error {

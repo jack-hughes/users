@@ -3,12 +3,14 @@ syntax = "proto3";
 package users.v1;
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
 option go_package = "github.com/jack-hughes/users/pkg/apis/users";
 
 service Users {
   rpc Create(User) returns (User) {}
   rpc Update(User) returns (User) {}
-  rpc Delete(User) returns (User) {}
+  rpc Delete(User) returns (google.protobuf.Empty) {}
   rpc List(ListUsersRequest) returns (stream User) {}
 }
 

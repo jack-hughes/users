@@ -157,7 +157,7 @@ func TestStore_Create(t *testing.T) {
 
 func queryCreate() string {
 	return `
-INSERT INTO users.users (first_name, lastname, nickname, password, email, country)
+INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
 VALUES ($1, $2, $3, $4, $5, $6)
 RETURNING *;
 `

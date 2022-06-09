@@ -8,6 +8,7 @@ package users
 
 import (
 	context "context"
+	empty "github.com/golang/protobuf/ptypes/empty"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -24,7 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type UsersClient interface {
 	Create(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
 	Update(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
-	Delete(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error)
+	Delete(ctx context.Context, in *User, opts ...grpc.CallOption) (*empty.Empty, error)
 	List(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (Users_ListClient, error)
 }
 
@@ -54,8 +55,8 @@ func (c *usersClient) Update(ctx context.Context, in *User, opts ...grpc.CallOpt
 	return out, nil
 }
 
-func (c *usersClient) Delete(ctx context.Context, in *User, opts ...grpc.CallOption) (*User, error) {
-	out := new(User)
+func (c *usersClient) Delete(ctx context.Context, in *User, opts ...grpc.CallOption) (*empty.Empty, error) {
+	out := new(empty.Empty)
 	err := c.cc.Invoke(ctx, "/users.v1.Users/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -101,7 +102,7 @@ func (x *usersListClient) Recv() (*User, error) {
 type UsersServer interface {
 	Create(context.Context, *User) (*User, error)
 	Update(context.Context, *User) (*User, error)
-	Delete(context.Context, *User) (*User, error)
+	Delete(context.Context, *User) (*empty.Empty, error)
 	List(*ListUsersRequest, Users_ListServer) error
 	mustEmbedUnimplementedUsersServer()
 }
@@ -116,7 +117,7 @@ func (UnimplementedUsersServer) Create(context.Context, *User) (*User, error) {
 func (UnimplementedUsersServer) Update(context.Context, *User) (*User, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
 }
-func (UnimplementedUsersServer) Delete(context.Context, *User) (*User, error) {
+func (UnimplementedUsersServer) Delete(context.Context, *User) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
 }
 func (UnimplementedUsersServer) List(*ListUsersRequest, Users_ListServer) error {

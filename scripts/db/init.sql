@@ -4,9 +4,10 @@ CREATE SCHEMA IF NOT EXISTS users;
 -- Create the users table
 CREATE TABLE IF NOT EXISTS users.users
 (
-    id         UUID        DEFAULT gen_random_uuid() NOT NULL CONSTRAINT users_pk PRIMARY KEY,
+    id         UUID        DEFAULT gen_random_uuid() NOT NULL
+        CONSTRAINT users_pk PRIMARY KEY,
     first_name TEXT                                  NOT NULL,
-    lastname   TEXT                                  NOT NULL,
+    last_name  TEXT                                  NOT NULL,
     nickname   TEXT                                  NOT NULL,
     password   TEXT                                  NOT NULL,
     email      TEXT UNIQUE                           NOT NULL,
@@ -21,20 +22,25 @@ CREATE UNIQUE INDEX users_id_uindex
 
 -- Create function to automatically set updated at when a row is changed
 CREATE OR REPLACE FUNCTION trigger_set_timestamp()
-    RETURNS TRIGGER AS $$
+    RETURNS TRIGGER AS
+$$
 BEGIN
     NEW.updated_at = NOW();
-RETURN NEW;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Create a trigger for the above rule
 CREATE TRIGGER set_timestamp
-    BEFORE UPDATE ON users.users
+    BEFORE UPDATE
+    ON users.users
     FOR EACH ROW
-    EXECUTE PROCEDURE trigger_set_timestamp();
+EXECUTE PROCEDURE trigger_set_timestamp();
 
 -- Seed database
-INSERT INTO users.users (first_name, lastname, nickname, password, email, country) VALUES ('jack', 'hughes', 'jack-hughes', 'jack-test-pw', 'jack@test.com', 'GB');
-INSERT INTO users.users (first_name, lastname, nickname, password, email, country) VALUES ('jane', 'doe', 'jane-doe', 'jane-test-pw', 'jane@test.com', 'US');
-INSERT INTO users.users (first_name, lastname, nickname, password, email, country) VALUES ('john', 'smith', 'john-smith', 'john-test-pw', 'john@test.com', 'UA');
+INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
+VALUES ('jack', 'hughes', 'jack-hughes', 'jack-test-pw', 'jack@test.com', 'GB');
+INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
+VALUES ('jane', 'doe', 'jane-doe', 'jane-test-pw', 'jane@test.com', 'US');
+INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
+VALUES ('john', 'smith', 'john-smith', 'john-test-pw', 'john@test.com', 'UA');
