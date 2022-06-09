@@ -4,6 +4,7 @@ import (
 	"time"
 )
 
+// User is a representation of a User in the database
 type User struct {
 	Id        string
 	FirstName string

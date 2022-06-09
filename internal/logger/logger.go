@@ -7,7 +7,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// NewZapLogger initialise zap logger
+// NewZapLogger initialise zap logger for the application
 func NewZapLogger(appName string, level zapcore.Level) *zap.Logger {
 	config := zap.NewProductionConfig()
 	config.EncoderConfig.EncodeTime = zapcore.RFC3339NanoTimeEncoder

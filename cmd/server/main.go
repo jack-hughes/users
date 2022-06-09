@@ -24,7 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatal(fmt.Sprintf("couldn't load config: %v", err))
 	}
-
+	log.Debug("config loaded")
 	// Establish database connection pool
 	db, err := utils.NewDatabase(
 		context.TODO(),
@@ -40,14 +40,16 @@ func main() {
 	if err := db.Ping(context.TODO()); err != nil {
 		log.Fatal(fmt.Sprintf("couldn't ping database: %v", err))
 	}
+	log.Debug("database successfully pinged")
 
-	// Bootstrap service
+	// Bootstrap and launch service
 	store := storage.New(log, db)
 	addr := fmt.Sprintf(":%s", cfg.GRPCPort)
 	lis, err := net.Listen("tcp", addr)
 	if err != nil {
 		log.Fatal(fmt.Sprintf("couldn't load config: %v", err))
 	}
+	log.Debug(fmt.Sprintf("listening on port: %v", cfg.GRPCPort))
 
 	srv := grpc.NewServer()
 	svc := service.NewUserService(log, store, db)

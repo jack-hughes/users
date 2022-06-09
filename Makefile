@@ -1,11 +1,19 @@
+.PHONY: test build proto kind
+
+race:
+	mkdir -p artifacts
+	go test -race -short -cover -coverprofile=artifacts/coverage.txt -covermode=atomic ./...
+
 docker:
-	docker build -t ghcr.io/jack-hughes/users:local-dev .
+	docker build -t ghcr.io/jack-hughes/users-service:local-dev .
 
 up:
-	docker-compose up --build
+	docker-compose up --build -d
+	curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ \
+	-d @scripts/debezium/register-postgres.json
 
 down:
-	docker-compose down -v
+	docker-compose down -v --remove-orphans
 
 proto:
 	protoc --go_out="pkg" --go-grpc_out="pkg" \
@@ -18,3 +26,21 @@ generate: proto
 	go generate ./...
 	go fmt ./...
 	go vet ./...
+
+lint:
+	golangci-lint run --fast --timeout=5m
+	golint ./pkg/... ./cmd/...
+
+test:
+	go test ./...
+
+helm-template:
+	helm template users-service charts/
+
+kind-up: docker
+	./scripts/kind.sh
+
+kind-down:
+	helm delete local-release -n postgres
+	kubectl delete pvc -l release=local-release
+	kind delete cluster --name users-service

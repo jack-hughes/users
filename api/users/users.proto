@@ -28,6 +28,5 @@ message User {
 }
 
 message ListUsersRequest {
-  string id = 1;
-  string filter = 2;
+  string filter = 1;
 }

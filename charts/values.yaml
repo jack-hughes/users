@@ -1,0 +1,19 @@
+replicaCount: 2
+label: users-service
+namespace: users
+image:
+  repository: ghcr.io/jack-hughes
+  tag: users-service:local-dev
+  pullPolicy: IfNotPresent
+env:
+  grpcPort: 5355
+  dbHost: local-release-postgresql.postgres.svc.cluster.local
+  dbPort: 5432
+  dbSecret: db-secret
+  dbUsername: username
+  dbPassword: password
+  dbDatabase: database
+  dbName: users
+service:
+  type: ClusterIP
+  port: 5355

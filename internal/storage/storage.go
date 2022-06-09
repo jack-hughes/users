@@ -4,13 +4,17 @@ import (
 	"context"
 	"fmt"
 	"github.com/jack-hughes/users/internal/storage/types"
+	"github.com/jack-hughes/users/internal/utils"
 	"github.com/jackc/pgconn"
 	"github.com/jackc/pgx/v4"
 	"go.uber.org/zap"
 )
 
+// listScan is defined in order to mock in unit tests
 var listScan = listScanFunc
 
+// Postgres defines operations available on the database connection pool, the interface allows us to easily mock
+// database functionality for testing
 //go:generate go run -mod=mod github.com/golang/mock/mockgen -source=./storage.go -package=mocks -destination=../../test/mocks/postgres_mocks.go
 type Postgres interface {
 	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
@@ -18,11 +22,13 @@ type Postgres interface {
 	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
 }
 
+// Store contains a database connection pool and logger
 type Store struct {
 	db  Postgres
 	log *zap.Logger
 }
 
+// New instantiates a new storage object with a database connection pool and logger
 func New(log *zap.Logger, db Postgres) Store {
 	log = log.With(zap.String("component", "storage"))
 	log.Debug("configuring database")
@@ -33,6 +39,7 @@ func New(log *zap.Logger, db Postgres) Store {
 	}
 }
 
+// Create a user in Postgres, returning inserted fields
 func (s Store) Create(ctx context.Context, usr types.User) (types.User, error) {
 	sql := `
 INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
@@ -58,6 +65,7 @@ RETURNING *;
 	return dbUsr, nil
 }
 
+// Update a user in Postgres based on their id, returning all user columns
 func (s Store) Update(ctx context.Context, usr types.User) (types.User, error) {
 	sql := `
 UPDATE users.users SET
@@ -89,16 +97,22 @@ RETURNING *;
 	return dbUsr, nil
 }
 
+// Delete a user in Postgres
 func (s Store) Delete(ctx context.Context, usr types.User) error {
 	sql := "DELETE FROM users.users WHERE id = $1;"
-	_, err := s.db.Exec(ctx, sql, usr.Id)
+	tag, err := s.db.Exec(ctx, sql, usr.Id)
 	if err != nil {
 		return err
+	}
+
+	if tag.RowsAffected() == 0 {
+		return utils.NotFoundError{}
 	}
 
 	return nil
 }
 
+// List all users in Postgres where a country filter applies
 func (s Store) List(ctx context.Context, countryFilter string) ([]types.User, error) {
 	sql := `
 SELECT id, first_name, last_name, nickname, password, email, country, created_at, updated_at
@@ -118,6 +132,7 @@ WHERE country = $1;
 	return res, nil
 }
 
+// insertUserArgs generates an interface slice for prettier args
 func insertUserArgs(in types.User) []interface{} {
 	return []interface{}{
 		in.FirstName,
@@ -128,6 +143,8 @@ func insertUserArgs(in types.User) []interface{} {
 		in.Country,
 	}
 }
+
+// updateUserArgs generates an interface slice for prettier args
 func updateUserArgs(in types.User) []interface{} {
 	return []interface{}{
 		in.FirstName,
@@ -140,6 +157,7 @@ func updateUserArgs(in types.User) []interface{} {
 	}
 }
 
+// listScanFunc scans rows into the user slice, it is its own function to enable easier testing
 func listScanFunc(rows pgx.Rows) ([]types.User, error) {
 	var list []types.User
 	for rows.Next() {

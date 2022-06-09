@@ -19,11 +19,6 @@ func Test_SanitiseError(t *testing.T) {
 	}
 	tests := []tt{
 		{
-			name:     "no error",
-			error:    nil,
-			expected: nil,
-		},
-		{
 			name:     "unique constraint violation error",
 			error:    &pgconn.PgError{Code: pgerrcode.UniqueViolation, Severity: "test-sev", Message: "test-message"},
 			expected: status.Error(codes.AlreadyExists, "test-sev: test-message (SQLSTATE 23505)"),
@@ -37,6 +32,11 @@ func Test_SanitiseError(t *testing.T) {
 			name:     "non-pg error",
 			error:    errors.New("bang"),
 			expected: status.Error(codes.Internal, "bang"),
+		},
+		{
+			name:     "not found error",
+			error:    NotFoundError{},
+			expected: status.Error(codes.NotFound, "record not found"),
 		},
 	}
 	for _, tt := range tests {

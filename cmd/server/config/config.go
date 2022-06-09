@@ -4,7 +4,7 @@ import (
 	"github.com/caarlos0/env/v6"
 )
 
-// Config provides configuration settings
+// Config provides configuration settings from environment variables
 type Config struct {
 	GRPCPort   string `env:"GRPC_PORT,notEmpty"`
 	DBUsername string `env:"DB_USERNAME,notEmpty"`
