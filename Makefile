@@ -28,8 +28,7 @@ generate: proto
 	go vet ./...
 
 lint:
-	golangci-lint run --fast --timeout=5m
-	golint ./pkg/... ./cmd/...
+	golangci-lint run ./... --timeout=5m
 
 test:
 	go test ./...

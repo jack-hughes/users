@@ -1,0 +1,35 @@
+name: service
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v1
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18
+      - name: Unit Test
+        run: make race
+      - name: Upload Coverage Report
+        uses: codecov/codecov-action@v1.0.2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./artifacts/coverage.txt
+          flags: unittests
+          name: codecov-umbrella
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+      - uses: actions/checkout@v3
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
