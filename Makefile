@@ -8,8 +8,7 @@ docker:
 	docker build -t ghcr.io/jack-hughes/users-service:local-dev .
 
 up:
-	./scripts/local.sh
-
+	docker-compose up --build -d
 
 down:
 	docker-compose down -v --remove-orphans
