@@ -8,9 +8,8 @@ docker:
 	docker build -t ghcr.io/jack-hughes/users-service:local-dev .
 
 up:
-	docker-compose up --build -d
-	curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ \
-	-d @scripts/debezium/register-postgres.json
+	./scripts/local.sh
+
 
 down:
 	docker-compose down -v --remove-orphans
