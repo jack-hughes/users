@@ -4,10 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/jack-hughes/users/cmd/server/config"
+	"github.com/jack-hughes/users/internal/healthcheck"
 	"github.com/jack-hughes/users/internal/logger"
 	"github.com/jack-hughes/users/internal/service"
 	"github.com/jack-hughes/users/internal/storage"
 	"github.com/jack-hughes/users/internal/utils"
+	"github.com/jack-hughes/users/pkg/api/health"
 	"github.com/jack-hughes/users/pkg/api/users"
 
 	"go.uber.org/zap"
@@ -52,8 +54,11 @@ func main() {
 	log.Debug(fmt.Sprintf("listening on port: %v", cfg.GRPCPort))
 
 	srv := grpc.NewServer()
+	// Register services
 	svc := service.NewUserService(log, store, db)
+	hc := healthcheck.NewHealthChecker(log, db)
 	users.RegisterUsersServer(srv, svc)
+	health.RegisterHealthServer(srv, hc)
 	if err := srv.Serve(lis); err != nil {
 		log.Fatal(fmt.Sprintf("failed to serve: %v", err))
 	}

@@ -41,3 +41,10 @@ spec:
           ports:
             - name: grpc
               containerPort: {{ .Values.env.grpcPort }}
+          readinessProbe:
+            exec:
+              command: ["/grpc_health_probe", "-addr=:{{ .Values.env.grpcPort }}"]
+            initialDelaySeconds: 5
+          livenessProbe:
+            exec:
+              command: ["/grpc_health_probe", "-addr=:{{ .Values.env.grpcPort }}"]
