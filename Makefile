@@ -43,3 +43,9 @@ kind-down:
 	helm delete local-release -n postgres
 	kubectl delete pvc -l release=local-release
 	kind delete cluster --name users-service
+
+build-cli:
+	go build -o bin/userctl ./cmd/userctl
+
+integration: up build-cli
+	./scripts/integration.sh
