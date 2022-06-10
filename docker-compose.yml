@@ -79,6 +79,10 @@ services:
       - connect
     depends_on:
       - connect
+      - users-service
+      - kafka
+      - kafdrop
+      - zookeeper
     command: -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://connect:8083/connectors/ -d @/data/register-postgres.json
     volumes:
       - ./scripts/debezium/register-postgres.json:/data/register-postgres.json

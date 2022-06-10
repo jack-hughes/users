@@ -28,9 +28,6 @@ generate: proto
 lint:
 	golangci-lint run ./... --timeout=5m
 
-test:
-	go test ./...
-
 helm-template:
 	helm template users-service charts/
 
@@ -43,6 +40,7 @@ kind-down:
 	kind delete cluster --name users-service
 
 build-cli:
+	mkdir -p bin
 	go build -o bin/userctl ./cmd/userctl
 
 integration: up build-cli
