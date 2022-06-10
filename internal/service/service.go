@@ -46,7 +46,6 @@ func NewUserService(log *zap.Logger, store Storage, db storage.Postgres) *UserSe
 // Create allows the creation of new user objects in the database
 func (u UserService) Create(ctx context.Context, user *users.User) (*users.User, error) {
 	u.log.Debug(fmt.Sprintf("creating user with email: %v", user.Email))
-
 	usr, err := u.store.Create(ctx, types.User{
 		FirstName: user.FirstName,
 		LastName:  user.LastName,

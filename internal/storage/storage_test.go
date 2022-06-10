@@ -503,7 +503,7 @@ func TestStore_ListScanFunc(t *testing.T) {
 func queryCreate() string {
 	return `
 INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
-VALUES ($1, $2, $3, $4, $5, $6)
+VALUES ($1, $2, $3, crypt($4, gen_salt('bf', 8)), $5, $6)
 RETURNING *;
 `
 }
@@ -514,7 +514,7 @@ UPDATE users.users SET
     first_name = $1,
     last_name = $2,
     nickname = $3,
-    password = $4,
+    password = crypt($4, gen_salt('bf', 8)),
     email = $5,
     country = $6
     WHERE id = $7

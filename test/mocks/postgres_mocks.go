@@ -56,6 +56,20 @@ func (mr *MockPostgresMockRecorder) Exec(ctx, sql interface{}, arguments ...inte
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Exec", reflect.TypeOf((*MockPostgres)(nil).Exec), varargs...)
 }
 
+// Ping mocks base method.
+func (m *MockPostgres) Ping(ctx context.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Ping", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// Ping indicates an expected call of Ping.
+func (mr *MockPostgresMockRecorder) Ping(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Ping", reflect.TypeOf((*MockPostgres)(nil).Ping), ctx)
+}
+
 // Query mocks base method.
 func (m *MockPostgres) Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error) {
 	m.ctrl.T.Helper()

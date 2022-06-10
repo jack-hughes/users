@@ -1,6 +1,8 @@
 -- Create the user schema
 CREATE SCHEMA IF NOT EXISTS users;
 
+CREATE EXTENSION pgcrypto;
+
 -- Create the users table
 CREATE TABLE IF NOT EXISTS users.users
 (
@@ -39,8 +41,8 @@ EXECUTE PROCEDURE trigger_set_timestamp();
 
 -- Seed database
 INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
-VALUES ('jack', 'hughes', 'jack-hughes', 'jack-test-pw', 'jack@test.com', 'GB');
+VALUES ('jack', 'hughes', 'jack-hughes', crypt('jack-test-pw', gen_salt('bf', 8)), 'jack@test.com', 'GB');
 INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
-VALUES ('jane', 'doe', 'jane-doe', 'jane-test-pw', 'jane@test.com', 'US');
+VALUES ('jane', 'doe', 'jane-doe', crypt('jane-test-pw', gen_salt('bf', 8)), 'jane@test.com', 'US');
 INSERT INTO users.users (first_name, last_name, nickname, password, email, country)
-VALUES ('john', 'smith', 'john-smith', 'john-test-pw', 'john@test.com', 'UA');
+VALUES ('john', 'smith', 'john-smith', crypt('john-test-pw', gen_salt('bf', 8)), 'john@test.com', 'UA');
