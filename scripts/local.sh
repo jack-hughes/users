@@ -9,5 +9,5 @@ docker-compose up --build -d
 ip=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' connect)
 echo "container ip: $ip"
 sleep 10
-curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://$ip:8083/connectors/ \
+curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ \
 -d @scripts/debezium/register-postgres.json
