@@ -1,7 +1,7 @@
 # users
 
 [![codecov](https://codecov.io/gh/jack-hughes/users/branch/main/graph/badge.svg?token=8X6JNWP97U)](https://codecov.io/gh/jack-hughes/users)
-[![CI](https://github.com/jack-hughes/users/actions/workflows/service.yml/badge.svg)](https://github.com/jack-hughes/users/actions/workflows/service.yml)
+[![CI](https://github.com/jack-hughes/users/actions/workflows/service.yaml/badge.svg)](https://github.com/jack-hughes/users/actions/workflows/service.yaml)
 
 ## Table of Contents
 
