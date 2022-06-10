@@ -9,8 +9,6 @@ docker:
 
 up:
 	docker-compose up --build -d
-	curl -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://localhost:8083/connectors/ \
-	-d @scripts/debezium/register-postgres.json
 
 down:
 	docker-compose down -v --remove-orphans
@@ -28,8 +26,7 @@ generate: proto
 	go vet ./...
 
 lint:
-	golangci-lint run --fast --timeout=5m
-	golint ./pkg/... ./cmd/...
+	golangci-lint run ./... --timeout=5m
 
 test:
 	go test ./...
@@ -44,3 +41,9 @@ kind-down:
 	helm delete local-release -n postgres
 	kubectl delete pvc -l release=local-release
 	kind delete cluster --name users-service
+
+build-cli:
+	go build -o bin/userctl ./cmd/userctl
+
+integration: up build-cli
+	./scripts/integration.sh

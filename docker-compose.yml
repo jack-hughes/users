@@ -72,5 +72,15 @@ services:
         condition: service_healthy
     links:
       - postgres
+  curl:
+    container_name: curl
+    image: alpine/curl
+    links:
+      - connect
+    depends_on:
+      - connect
+    command: -i -X POST -H "Accept:application/json" -H  "Content-Type:application/json" http://connect:8083/connectors/ -d @/data/register-postgres.json
+    volumes:
+      - ./scripts/debezium/register-postgres.json:/data/register-postgres.json
 volumes:
   postgres:

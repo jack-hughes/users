@@ -439,11 +439,10 @@ func TestStore_List(t *testing.T) {
 
 func TestStore_ListScanFunc(t *testing.T) {
 	type tt struct {
-		name     string
-		rows     pgx.Rows
-		res      []types.User
-		expCalls func(tt tt, mr *mocks.MockRows)
-		err      error
+		name string
+		rows pgx.Rows
+		res  []types.User
+		err  error
 	}
 	tests := []tt{
 		{
